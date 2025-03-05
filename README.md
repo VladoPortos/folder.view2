@@ -14,6 +14,18 @@ Manual for now, need to figure out how to submit to Unraid app store.
 ### Backup
 If you already have this plugin setup go to Plugins -> FolderView and "Export All" your current settings!
 
+However if you arelady can't access FolderView go to Settings via UI, go to:
+
+`config\plugins\folder.view\` and backup: `docker.json` and `vm.json` 
+
+```bash
+root@PlexServer:/boot/config/plugins/folder.view# pwd
+/boot/config/plugins/folder.view
+root@PlexServer:/boot/config/plugins/folder.view# ls
+docker.json  folder.view-2025.02.26.txz  scripts/  styles/  version  vm.json
+root@PlexServer:/boot/config/plugins/folder.view# 
+```
+
 ### Manual installation
 1. Copy the `folder.view.plg` file to `/boot/config/plugins/` folder.
 2. Copy the latest 'folder.view-<date>.txz' from archive folder to `/boot/config/plugins/folder.view/` folder.
