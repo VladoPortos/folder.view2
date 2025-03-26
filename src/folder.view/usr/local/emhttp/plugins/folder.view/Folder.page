@@ -57,6 +57,22 @@ Markdown="false"
         </div>
         <div class="basic">
             <dl>
+                <dt data-i18n="webui-url">WebUI URL:</dt>
+                <dd>
+                    <img class="img" style="visibility: hidden;">
+                    <input type="text" name="webui_url" value="">
+                </dd>
+            </dl>
+            <blockquote class="inline_help">
+                <p data-i18n="[html]webui-url-tooltip">
+                    URL for the folder's WebUI, similar to container WebUI URL. Use [IP] placeholder for the server IP.
+                    <br>
+                    This will add an "Open WebUI" option to the folder's context menu.
+                </p>
+            </blockquote>
+        </div>
+        <div class="basic">
+            <dl>
                 <dt data-i18n="preview">Preview:</dt>
                 <dd>
                     <img class="img" style="visibility: hidden;">

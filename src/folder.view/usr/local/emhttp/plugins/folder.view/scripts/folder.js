@@ -55,6 +55,7 @@ $('div.canvas > form')[0].preview_border_color.value = rgbToHex($('body').css('c
         const form = $('div.canvas > form')[0];
         form.name.value = currFolder.name;
         form.icon.value = currFolder.icon;
+        form.webui_url.value = currFolder.webui_url || '';
         form.preview.value = currFolder.settings.preview.toString();
         form.preview_hover.checked = currFolder.settings.preview_hover;
         form.preview_update.checked = currFolder.settings.preview_update;
@@ -249,16 +250,17 @@ const submitForm = async (e) => {
     const folder = {
         name: e.name.value.toString(),
         icon: e.icon.value.toString(),
+        webui_url: e.webui_url.value.toString(),
         settings: {
             preview: parseInt(e.preview.value.toString()),
             preview_hover: e.preview_hover.checked,
             preview_update: e.preview_update.checked,
-            preview_text_width: e.preview_text_width.value,
             preview_grayscale: e.preview_grayscale.checked,
             preview_webui: e.preview_webui.checked,
             preview_logs: e.preview_logs.checked,
             preview_console: e.preview_console.checked,
             preview_vertical_bars: e.preview_vertical_bars.checked,
+            preview_text_width: e.preview_text_width.value.toString(),
             context: parseInt(e.context.value.toString()),
             context_trigger: parseInt(e.context_trigger.value.toString()),
             context_graph: parseInt(e.context_graph.value.toString()),
@@ -269,12 +271,12 @@ const submitForm = async (e) => {
             default_action: e.default_action.checked,
             expand_tab: e.expand_tab.checked,
             override_default_actions: e.override_default_actions.checked,
-            expand_dashboard: e.expand_dashboard.checked,
+            expand_dashboard: e.expand_dashboard.checked
         },
         regex: e.regex.value.toString(),
-        containers: [...$('input[name*="containers"]:checked').map((i, e) => $(e).val())],
-        actions
-    }
+        containers: [...$('input[name="containers[]"]:checked').map((i, e) => e.value).get()],
+        actions: actions
+    };
     // send the data to the right endpoint
     if (folderId) {
         await $.post('/plugins/folder.view/server/update.php', { type: type, content: JSON.stringify(folder), id: folderId });

@@ -604,6 +604,30 @@ const addVMFolderContext = (id) => {
         above: false
     });
 
+    // If the folder has a WebUI URL, add it to the context menu at the top
+    if (globalFolders[id].webui_url && globalFolders[id].webui_url.trim() !== '') {
+        // Process WebUI URL to replace [IP] placeholder with the host IP
+        let webuiUrl = globalFolders[id].webui_url;
+        if (webuiUrl.includes('[IP]')) {
+            // Get the host IP from the window.location object
+            const hostIP = window.location.hostname;
+            webuiUrl = webuiUrl.replace(/\[IP\]/g, hostIP);
+        }
+        
+        opts.push({
+            text: $.i18n('webui') || 'Open WebUI',
+            icon: 'fa-globe',
+            action: (e) => { 
+                e.preventDefault(); 
+                window.open(webuiUrl, '_blank'); 
+            }
+        });
+        
+        opts.push({
+            divider: true
+        });
+    }
+
     if(globalFolders[id].settings.override_default_actions && globalFolders[id].actions && globalFolders[id].actions.length) {
         opts.push(
             ...globalFolders[id].actions.map((e, i) => {
@@ -666,7 +690,6 @@ const addVMFolderContext = (id) => {
             divider: true
         });
     }
-
 
     opts.push({
         text: $.i18n('edit'),

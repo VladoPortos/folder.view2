@@ -4,7 +4,7 @@
             "scolcipitato"
         ],
         "last-updated": "2023-11-29",
-		"locale": "en"
+        "locale": "en"
     },
     "add-folder": "Add Folder",
     "up-to-date": "up-to-date",
@@ -53,6 +53,8 @@
     "name-tooltip": "The name of the folder, not that difficult.",
     "icon": "Icon:",
     "icon-tooltip": "A link to an image (<a href=\"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#supported_image_formats\" target=\"_blank\">Supported formats</a>)<br>It also supports <b>data:image/{type};base64,</b> format (<a href=\"https://base64.guru/converter/encode/image\" target=\"_blank\">Convert image to data strings</a>)<br><a href=\"https://forums.unraid.net/topic/92824-icon-collections-for-docker-folder-plugin/\" target=\"_blank\">Thread with some icons</a>.<br>You can click the icon of the Docker/VM to set the folder icon.",
+    "webui-url": "WebUI URL:",
+    "webui-url-tooltip": "URL for the folder's WebUI, similar to container WebUI URL. Use [IP] placeholder for the server IP.<br>This will add an \"Open WebUI\" option to the folder's context menu.",
     "preview": "Preview:",
     "preview-tooltip": "The preview type, not that difficult.",
     "preview-option-0": "None",
