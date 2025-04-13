@@ -1,0 +1,19 @@
+Menu="Dashboard"
+Icon="folder-open-o"
+Type="xmenu"
+Tabs="true"
+Markdown="false"
+---
+<?php
+$type = 'dashboard';
+require_once('/usr/local/emhttp/plugins/folder.view2/langs/script.php');
+?>
+<script src="/plugins/folder.view2/scripts/include/customEvents.js"></script>
+<?php
+require_once('/usr/local/emhttp/plugins/folder.view2/scripts/custom.php');
+?>
+<script src="<?php autov('/plugins/folder.view2/scripts/dashboard.js')?>"></script>
+<link rel="stylesheet" href="<?php autov('/plugins/folder.view2/styles/dashboard.css')?>">
+<?php
+require_once('/usr/local/emhttp/plugins/folder.view2/styles/custom.php');
+?>

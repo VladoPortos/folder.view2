@@ -33,16 +33,16 @@ Example
 ```
 
 ## CSS
-The file you want to edit is in `/boot/config/plugins/folder.view/styles`, it's plain CSS, so you will need to know CSS before doing something.
+The file you want to edit is in `/boot/config/plugins/folder.view2/styles`, it's plain CSS, so you will need to know CSS before doing something.
 
 You can find the template used for creating the folder here, ([Dashboard](./dashboard/tab.html), [Docker](./docker/tab.html), [VMs](./vms/tab.html)), you can't change the template.html because it is hard-coded into the plugin, so any visual modification should be done trough CSS.
 
-You can find the default styles here, ([Dashboard](../src/folder.view/usr/local/emhttp/plugins/folder.view/styles/dashboard.css), [Docker](../src/folder.view/usr/local/emhttp/plugins/folder.view/styles/docker.css), [VMs](../src/folder.view/usr/local/emhttp/plugins/folder.view/styles/vm.css)).
+You can find the default styles here, ([Dashboard](../src/folder.view2/usr/local/emhttp/plugins/folder.view2/styles/dashboard.css), [Docker](../src/folder.view2/usr/local/emhttp/plugins/folder.view2/styles/docker.css), [VMs](../src/folder.view2/usr/local/emhttp/plugins/folder.view2/styles/vm.css)).
 
 This is it, have fun.
 
 ## JS
-The file you want to edit is in `/boot/config/plugins/folder.view/scripts`, it's plain JavaScript, so you will need to know JavaScript before doing something.
+The file you want to edit is in `/boot/config/plugins/folder.view2/scripts`, it's plain JavaScript, so you will need to know JavaScript before doing something.
 
 You can find the template used for creating custom plugins here, ([Dashboard](./dashboard/events.js), [Docker](./docker/events.js), [VMs](./vms/events.js)).
 

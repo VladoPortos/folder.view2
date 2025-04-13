@@ -1,10 +1,10 @@
-# FolderView For Unraid 7
+# FolderView2 For Unraid 7
 
-## What is FolderView?
+## What is FolderView2?
 
 Original creator: [**scolcipitato**](https://github.com/scolcipitato/folder.view)
 
-FolderView lets you create folders for grouping Dockers and VMs together to help with organization. Especially useful if you're using docker-compose.
+FolderView2 lets you create folders for grouping Dockers and VMs together to help with organization. Especially useful if you're using docker-compose.
 Getting Started: A new button named "Add Folder" will appear at the bottom of the docker/VM tab next to "Add Container/VM".
 
 ## Installation
@@ -12,7 +12,7 @@ Getting Started: A new button named "Add Folder" will appear at the bottom of th
 Manual for now, need to figure out how to submit to Unraid app store.
 
 ### Backup
-If you already have this plugin setup go to Plugins -> FolderView and "Export All" your current settings!
+If you already have this plugins older version setup go to Plugins -> FolderView and "Export All" your current settings!
 
 However if you arelady can't access FolderView go to Settings via UI, go to:
 
@@ -22,26 +22,26 @@ However if you arelady can't access FolderView go to Settings via UI, go to:
 root@PlexServer:/boot/config/plugins/folder.view# pwd
 /boot/config/plugins/folder.view
 root@PlexServer:/boot/config/plugins/folder.view# ls
-docker.json  folder.view-2025.02.26.txz  scripts/  styles/  version  vm.json
+docker.json  folder.view2-2025.02.26.txz  scripts/  styles/  version  vm.json
 root@PlexServer:/boot/config/plugins/folder.view# 
 ```
 
 ### Easy Manual installation
 
-Use link: https://raw.githubusercontent.com/VladoPortos/folder.view/refs/heads/main/folder.view.plg
+Use link: https://raw.githubusercontent.com/VladoPortos/folder.view2/refs/heads/main/folder.view2.plg
 
 That link can be posted directly into the plugin install without needing to copy it to the filesystem beforehand.
 
-[![Install FolderView](img/plugin_install.png)]
+[![Install FolderView2](img/plugin_install.png)]
 
 
 ### Manual installation
-1. Copy the `folder.view.plg` file to `/boot/config/plugins/` folder.
-2. Copy the latest 'folder.view-<date>.txz' from archive folder to `/boot/config/plugins/folder.view/` folder.
-3. In Unraid webui go to Plugins -> Install Plugin tab, click on the folder `config` -> `plugins` -> `folder.view.plg` and press install button.
+1. Copy the `folder.view2.plg` file to `/boot/config/plugins/` folder.
+2. Copy the latest 'folder.view2-<date>.txz' from archive folder to `/boot/config/plugins/folder.view2/` folder.
+3. In Unraid webui go to Plugins -> Install Plugin tab, click on the folder `config` -> `plugins` -> `folder.view2.plg` and press install button.
 
 ## Support & Feedback
-If you have any questions or issues, please file an issue on [GitHub](https://github.com/VladoPortos/folder.view/issues).
+If you have any questions or issues, please file an issue on [GitHub](https://github.com/VladoPortos/folder.view2/issues).
 
 ## Contributors
 - [TurboStreetCar](https://github.com/TurboStreetCar) - Contributed improved folder.js implementation for compatibility with Unraid 7 and older versions

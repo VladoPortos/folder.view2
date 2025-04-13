@@ -1,0 +1,31 @@
+Menu="Docker"
+Icon="folder-open-o"
+Type="xmenu"
+Tabs="true"
+Markdown="false"
+---
+<?php
+$type = 'docker';
+require_once('/usr/local/emhttp/plugins/folder.view2/langs/script.php');
+?>
+<script>
+    $(document).ready(() => {
+        folderi18n = () => {
+            $(`<input type="button" onclick="createFolderBtn()" value="Add Folder" data-i18n="[value]add-folder">`).insertAfter('table#docker_containers');
+            $('body').i18n();
+            $('[type="button"]').i18n();
+        }
+        folderi18n();
+    });
+</script>
+<script src="/plugins/folder.view2/scripts/include/customEvents.js"></script>
+<?php require_once('/usr/local/emhttp/plugins/folder.view2/scripts/custom.php') ?>
+
+<script src="/plugins/folder.view2/scripts/include/chart.min.js"></script>
+<script src="/plugins/folder.view2/scripts/include/moment.min.js"></script>
+<script src="/plugins/folder.view2/scripts/include/chartjs-adapter-moment.min.js"></script>
+<script src="/plugins/folder.view2/scripts/include/chartjs-plugin-streaming.min.js"></script>
+<script defer src="<?php autov('/plugins/folder.view2/scripts/docker.js')?>"></script>
+
+<link rel="stylesheet" href="<?php autov('/plugins/folder.view2/styles/docker.css')?>">
+<?php require_once('/usr/local/emhttp/plugins/folder.view2/styles/custom.php') ?>

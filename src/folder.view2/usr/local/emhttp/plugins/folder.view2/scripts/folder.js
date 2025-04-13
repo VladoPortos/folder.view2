@@ -1,16 +1,13 @@
-// Global state
-const state = {
-    choose: [],
-    selectedRegex: [],
-    selected: [],
-    folders: null,
-    currentFolder: null
-};
-
-// Get URL parameters
-const urlParams = new URLSearchParams(location.search);
-const type = urlParams.get('type');
-const folderId = urlParams.get('id');
+// list of element to select
+let choose = [];
+// element selected by the regex string
+let selectedRegex = [];
+// element selected manually
+let selected = [];
+// docker or vm?
+const type = new URLSearchParams(location.search).get('type');
+//id of the folder if present
+const folderId = new URLSearchParams(location.search).get('id');
 
 const rgbToHex = (rgb) => {
     rgb = rgb.slice(4, -1).split(', ');
@@ -24,72 +21,74 @@ $('div.canvas > form')[0].preview_border_color.value = rgbToHex($('body').css('c
     if (type !== 'docker') {
         $('[constraint*="docker"]').hide();
     }
-    
     // get folders
-    state.folders = JSON.parse(await $.get(`/plugins/folder.view2/server/read.php?type=${type}`).promise());
-    
+    let folders = JSON.parse(await $.get(`/plugins/folder.view2/server/read.php?type=${type}`).promise());
     // get the list of element docker/vm
     let typeFilter;
     if (type === 'docker') {
-        typeFilter = (e) => ({
-            'Name': e.info.Name,
-            'Icon': e.info.Config.Labels['net.unraid.docker.icon'],
-            'Label': e.info.Config.Labels['folder.view2']
-        });
+        typeFilter = (e) => {
+            return {
+                'Name': e.info.Name,
+                'Icon': e.info.Config.Labels['net.unraid.docker.icon'],
+                'Label': e.info.Config.Labels['folder.view2']
+            }
+        };
     } else if (type === 'vm') {
-        typeFilter = (e) => ({
-            'Name': e.name,
-            'Icon': e.icon,
-            'Label': undefined
-        });
+        typeFilter = (e) => {
+            return {
+                'Name': e.name,
+                'Icon': e.icon,
+                'Label': undefined
+            }
+        };
     }
 
-    state.choose = Object.values(JSON.parse(await $.get(`/plugins/folder.view2/server/read_info.php?type=${type}`).promise())).map(typeFilter);
+    choose = Object.values(JSON.parse(await $.get(`/plugins/folder.view2/server/read_info.php?type=${type}`).promise())).map(typeFilter);
 
     // if editing a folder and not creating one
     if (folderId) {
         // select the folder and delete it from the list
-        state.currentFolder = state.folders[folderId];
-        delete state.folders[folderId];
+        const currFolder = folders[folderId];
+        delete folders[folderId];
 
         // set the value of the form
         const form = $('div.canvas > form')[0];
-        form.name.value = state.currentFolder.name;
-        form.icon.value = state.currentFolder.icon;
-        form.preview.value = state.currentFolder.settings.preview.toString();
-        form.preview_hover.checked = state.currentFolder.settings.preview_hover;
-        form.preview_update.checked = state.currentFolder.settings.preview_update;
-        form.preview_text_width.value = state.currentFolder.settings.preview_text_width || '';
-        form.preview_grayscale.checked = state.currentFolder.settings.preview_grayscale;
-        form.preview_webui.checked = state.currentFolder.settings.preview_webui;
-        form.preview_logs.checked = state.currentFolder.settings.preview_logs;
-        form.preview_console.checked = state.currentFolder.settings.preview_console || false;
-        form.preview_vertical_bars.checked = state.currentFolder.settings.preview_vertical_bars || false;
-        form.context.value = state.currentFolder.settings.context?.toString() || '1';
-        form.context_trigger.value = state.currentFolder.settings.context_trigger?.toString() || '0';
-        form.context_graph.value = state.currentFolder.settings.context_graph?.toString() || '1';
-        form.context_graph_time.value = state.currentFolder.settings.context_graph_time?.toString() || '60';
-        form.preview_border.checked = state.currentFolder.settings.preview_border || false;
-        form.preview_border_color.value = state.currentFolder.settings.preview_border_color || rgbToHex($('body').css('color'));
-        form.update_column.checked = state.currentFolder.settings.update_column || false;
-        form.default_action.checked = state.currentFolder.settings.default_action || false;
-        form.expand_tab.checked = state.currentFolder.settings.expand_tab;
-        form.override_default_actions.checked = state.currentFolder.settings.override_default_actions;
-        form.expand_dashboard.checked = state.currentFolder.settings.expand_dashboard;
-        form.regex.value = state.currentFolder.regex;
-        
-        for (const ct of state.currentFolder.containers) {
-            const index = state.choose.findIndex((e) => e.Name === ct);
+        form.name.value = currFolder.name;
+        form.icon.value = currFolder.icon;
+        form.preview.value = currFolder.settings.preview.toString();
+        form.preview_hover.checked = currFolder.settings.preview_hover;
+        form.preview_update.checked = currFolder.settings.preview_update;
+        form.preview_text_width.value = currFolder.settings.preview_text_width || '';
+        form.preview_grayscale.checked = currFolder.settings.preview_grayscale;
+        form.preview_webui.checked = currFolder.settings.preview_webui;
+        form.preview_logs.checked = currFolder.settings.preview_logs;
+        form.preview_console.checked = currFolder.settings.preview_console || false;
+        form.preview_vertical_bars.checked = currFolder.settings.preview_vertical_bars || false;
+        form.context.value = currFolder.settings.context?.toString() || '1';
+        form.context_trigger.value = currFolder.settings.context_trigger?.toString() || '0';
+        form.context_graph.value = currFolder.settings.context_graph?.toString() || '1';
+        form.context_graph_time.value = currFolder.settings.context_graph_time?.toString() || '60';
+        form.preview_border.checked = currFolder.settings.preview_border || false;
+        form.preview_border_color.value = currFolder.settings.preview_border_color || rgbToHex($('body').css('color'));
+        form.update_column.checked = currFolder.settings.update_column || false;
+        form.default_action.checked = currFolder.settings.default_action || false;
+        form.expand_tab.checked = currFolder.settings.expand_tab;
+        form.override_default_actions.checked = currFolder.settings.override_default_actions;
+        form.expand_dashboard.checked = currFolder.settings.expand_dashboard;
+        form.regex.value = currFolder.regex;
+        for (const ct of currFolder.containers) {
+            const index = choose.findIndex((e) => e.Name === ct);
             if (index > -1) {
-                state.selected.push(state.choose.splice(index, 1)[0]);
+                selected.push(choose.splice(index, 1)[0]);
             }
-        }
+        };
 
-        state.currentFolder.actions?.forEach((e, i) => {
+        currFolder.actions?.forEach((e, i) => {
             $('.custom-action-wrapper').append(`<div class="custom-action-n-${i}">${e.name} <button onclick="return customAction(${i});"><i class="fa fa-pencil" aria-hidden="true"></i></button><button onclick="return rCcustomAction(${i});"><i class="fa fa-trash" aria-hidden="true"></i></button><input type="hidden" name="custom_action[]" value="${btoa(JSON.stringify(e))}"></div>`);
         });
 
-        // make the ui respond to the previous changes
+
+        // make the ui respond to the previus changes
         updateForm();
         updateRegex(form.regex);
         updateIcon(form.icon);
@@ -99,10 +98,23 @@ $('div.canvas > form')[0].preview_border_color.value = rgbToHex($('body').css('c
     $('input.basic-switch').switchButton({ labels_placement: 'right', off_label: $.i18n('off'), on_label: $.i18n('on')});
 
     // iterate over the folders
-    for (const [folderKey, value] of Object.entries(state.folders)) {
-        // if the folder is not selected
-        if (value.containers.some((e) => state.choose.some((f) => f.Name === e))) {
-            state.choose = state.choose.filter((e) => !value.containers.includes(e.Name));
+    for (const [folderId, value] of Object.entries(folders)) {
+        // match the element to the regex
+        if (value.regex) {
+            const regex = new RegExp(value.regex);
+            for (const container of choose) {
+                if (regex.test(container.Name)) {
+                    value.containers.push(container.Name);
+                }
+            }
+        }
+
+        // remove the containers from the order
+        for (const container of value.containers) {
+            const index = choose.findIndex((e) => e.Name === container);
+            if (index > -1) {
+                choose.splice(index, 1);
+            }
         }
     }
 
@@ -122,16 +134,16 @@ const updateIcon = (e) => {
  * @param {*} e the element
  */
 const updateRegex = (e) => {
-    state.choose = state.choose.concat(state.selectedRegex);
+    choose = choose.concat(selectedRegex);
     const fldName = $('[name="name"]')[0].value;
-    state.selectedRegex = state.choose.filter(el => el.Label === fldName);
+    selectedRegex = choose.filter(el => el.Label === fldName);
     if (e.value) {
         const regex = new RegExp(e.value);
-        for (let i = 0; i < state.choose.length; i++) {
-            if (regex.test(state.choose[i].Name)) {
-                const tmpSel = state.choose.splice(i, 1)[0];
-                if(!state.selectedRegex.includes(tmpSel)) {
-                    state.selectedRegex.push(tmpSel);
+        for (let i = 0; i < choose.length; i++) {
+            if (regex.test(choose[i].Name)) {
+                const tmpSel = choose.splice(i, 1)[0];
+                if(!selectedRegex.includes(tmpSel)) {
+                    selectedRegex.push(tmpSel);
                 }
                 i--;
             }
@@ -182,17 +194,17 @@ const updateList = () => {
     table.empty();
 
     // append the selected elements
-    for (const el of state.selected) {
+    for (const el of selected) {
         table.append($(`<tr class="item" draggable="true"><td><span style="cursor: pointer;" onclick="setIconAsContainer(this)"><img src="${el.Icon}" class="img" onerror="this.src='/plugins/dynamix.docker.manager/images/question.png';"></span>${el.Name}</td><td><input class="container-switch" checked type="checkbox" name="containers[]" value="${el.Name}" style="display: none;"></td></tr>`));
     }
 
     // append the rest of the elements
-    for (const el of state.choose) {
+    for (const el of choose) {
         table.append($(`<tr class="item" draggable="true"><td><span style="cursor: pointer;" onclick="setIconAsContainer(this)"><img src="${el.Icon}" class="img" onerror="this.src='/plugins/dynamix.docker.manager/images/question.png';"></span>${el.Name}</td><td><input class="container-switch" type="checkbox" name="containers[]" value="${el.Name}" style="display: none;"></td></tr>`));
     }
 
     // prepend the selected regex element
-    for (const el of state.selectedRegex) {
+    for (const el of selectedRegex) {
         table.prepend($(`<tr class="item"><td><span style="cursor: pointer;" onclick="setIconAsContainer(this)"><img src="${el.Icon}" class="img" onerror="this.src='/plugins/dynamix.docker.manager/images/question.png';"></span>${el.Name}</td><td><input class="container-switch" checked disabled type="checkbox" name="containers[]" value="${el.Name}" style="display: none;"></td></tr>`));
     }
 
@@ -314,7 +326,7 @@ const customAction = (action = undefined) => {
     }
     const selectCt = $('.action-subject [name="action_elements"]');
     selectCt.children().remove();
-    [...$('input[name*="containers"]:checked').map((i, e) => $(e).val()), ...state.selectedRegex.map(e => e.Name)].forEach((e) => {
+    [...$('input[name*="containers"]:checked').map((i, e) => $(e).val()), ...selectedRegex.map(e => e.Name)].forEach((e) => {
         if(config.conatiners?.includes(e)) {
             selectCt.append(`<option value="${e}" selected>${e}</option>`);
         } else {

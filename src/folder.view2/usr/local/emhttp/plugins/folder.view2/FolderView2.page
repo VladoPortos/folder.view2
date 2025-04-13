@@ -1,0 +1,79 @@
+Menu="Utilities"
+Title="FolderView2"
+Icon="folder-open-o"
+Type="xmenu"
+Tabs="true"
+Markdown="false"
+---
+
+<?php
+require_once('/usr/local/emhttp/plugins/folder.view2/langs/script.php');
+?>
+
+<script>
+    folderi18n = () => {
+        $('body').i18n();
+    }
+</script>
+<link rel="stylesheet" href="<?=autov('/plugins/folder.view2/styles/folderview2.css')?>">
+
+<h2 data-i18n="customizations">Customizations</h2>
+<button data-i18n="file-manager" onclick="fileManager()">Open File Manager</button>
+
+
+<h2 data-i18n="docker">Docker</h2>
+<div class="folder-table">
+    <button data-i18n="[html]export-all" onclick="downloadDocker()"><i class="fa fa-download" aria-hidden="true"></i> Export all</button>
+    <button data-i18n="[html]import-all" onclick="importDocker()"><i class="fa fa-upload" aria-hidden="true"></i> Import</button>
+    <button data-i18n="[html]clear-all" onclick="clearDocker()"><i class="fa fa-ban" aria-hidden="true"></i> Clear</button>
+    <table>
+        <thead>
+            <tr>
+                <th data-i18n="el-id">
+                    ID
+                </th>
+                <th data-i18n="el-name">
+                    Name
+                </th>
+                <th data-i18n="el-actions">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody id="docker">
+            
+        </tbody>
+    </table>
+</div>
+<hr>
+
+<h2 data-i18n="vms">VMs</h2>
+<div class="folder-table">
+    <button data-i18n="[html]export-all" onclick="downloadVm()"><i class="fa fa-download" aria-hidden="true"></i> Export all</button>
+    <button data-i18n="[html]import-all" onclick="importVm()"><i class="fa fa-upload" aria-hidden="true"></i> Import</button>
+    <button data-i18n="[html]clear-all" onclick="clearVm()"><i class="fa fa-ban" aria-hidden="true"></i> Clear</button>
+    <table>
+        <thead>
+            <tr>
+                <th data-i18n="el-id">
+                    ID
+                </th>
+                <th data-i18n="el-name">
+                    Name
+                </th>
+                <th data-i18n="el-actions">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody id="vms">
+    
+        </tbody>
+    </table>
+</div>
+<hr>
+
+<script src="<?=autov('/plugins/folder.view2/scripts/folderview2.js')?>"></script>
+
+<input type="file" style="display: none;" accept=".json">
+<input type="file" style="display: none;" accept=".css">

@@ -3,20 +3,20 @@
 CWD=`pwd`
 tmpdir="$CWD/tmp/tmp.$((RANDOM % 1000000))"
 version=$(date +"%Y.%m.%d")
-filename="$CWD/archive/folder.view-$version.txz"
-plgfile="$CWD/folder.view.plg"
-dayversion=$(ls $CWD/archive/folder.view-$version*.txz 2>/dev/null | wc -l)
+filename="$CWD/archive/folder.view2-$version.txz"
+plgfile="$CWD/folder.view2.plg"
+dayversion=$(ls $CWD/archive/folder.view2-$version*.txz 2>/dev/null | wc -l)
 
 if [ $dayversion -gt 0 ]
 then
     version="$version.$dayversion"
-    filename="$CWD/archive/folder.view-$version.txz"
+    filename="$CWD/archive/folder.view2-$version.txz"
 fi
 
 mkdir -p $tmpdir
 chmod 0755 -R .
 
-cd "$CWD/src/folder.view"
+cd "$CWD/src/folder.view2"
 cp --parents -f $(find . -type f ! \( -iname "pkg_build.sh" -o -iname "sftp-config.json"  \) ) $tmpdir/
 
 cd $tmpdir
