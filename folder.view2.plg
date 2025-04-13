@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="folder-open-o" support="https://forums.unraid.net/topic/142782-plugin-folderview2/" min="7.0.0">
     <CHANGES>
 
+###2025.04.13
+- Fix: Ongoing effort to get new verson to CA, renamed folder.view to folder.view2
+- Fix: Merged Fix broken layout of container preview by @JohannesHo
+
 ###2025.02.24
 - Fix: removed old file that cuased folder to show in settings.
 
