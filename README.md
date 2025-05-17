@@ -9,7 +9,7 @@ Getting Started: A new button named "Add Folder" will appear at the bottom of th
 
 ## Installation
 
-Manual for now, need to figure out how to submit to Unraid app store.
+You can find the FolderView2 in official Unraid app store.
 
 ### Backup
 If you already have this plugins older version setup go to Plugins -> FolderView and "Export All" your current settings!
