@@ -6,20 +6,12 @@
 <!ENTITY launch "Settings/FolderView2">
 <!ENTITY plugdir "/usr/local/emhttp/plugins/&name;">
 <!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/main/&name;.plg">
-<!ENTITY version "2025.05.26">
-<!ENTITY md5 "1c510f83fcafc91db5202ac713c1476b">
+<!ENTITY version "2025.04.13">
+<!ENTITY md5 "b3a00c47c4a549d6b97cc1e793f895d0">
 ]>
 
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="folder-open-o" support="https://forums.unraid.net/topic/189167-plugin-folderview2" min="7.0.0">
     <CHANGES>
-
-###2025.05.26
-- Fix: Docker tab now works with Unraid v7
-- Fix: Docker advanced view now works with Unraid v7
-- Fix: If container is using Tailscale, it now shows the link to the Tailscale webui
-- New: Added debug mode to PHP, to help with debugging in lib.php can be switched on and log to: /tmp/folder_view2_php_debug.log
-- New: Added debug mode to JS, to help with debugging in docker.js can be switched on and log to web console
-- Known issue: Custom themes might not yet work correctly with advanced view
 
 ###2025.04.13
 - Fix: Ongoing effort to get new verson to CA, renamed folder.view to folder.view2
