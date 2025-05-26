@@ -339,7 +339,7 @@ const customAction = (action = undefined) => {
     dialog.find('[name="action_elements"]').multiselect({
         header: false,
         noneSelectedText: "Select options",
-        zIndex: 99999999,
+        zIndex: 99998,
         appendTo: document.body,
         selectedText: (numChecked, numTotal, checkedItems) => {
             return checkedItems.map(e => e.value).join(', ');

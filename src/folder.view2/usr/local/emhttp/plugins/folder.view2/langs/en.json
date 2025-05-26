@@ -19,6 +19,7 @@
     "expand": "Expand",
     "compress": "Compress",
     "webui": "WebUI",
+    "tailscale-webui": "Tailscale WebUI",
     "console": "Console",
     "update": "Update",
     "update-force": "Force update",

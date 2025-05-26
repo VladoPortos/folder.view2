@@ -19,6 +19,7 @@
     "expand": "Rozwiń",
     "compress": "Zwiń",
     "webui": "WebUI",
+    "tailscale-webui": "Tailscale WebUI",
     "console": "Konsola",
     "update": "Aktualizuj",
     "update-force": "Wymuś aktualizację",

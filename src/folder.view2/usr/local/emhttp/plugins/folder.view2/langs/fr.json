@@ -19,6 +19,7 @@
     "expand": "Déployer",
     "compress": "Replier",
     "webui": "Interface Web",
+    "tailscale-webui": "Tailscale WebUI",
     "console": "Console",
     "update": "Mettre à jour",
     "update-force": "Forcer la mise à jour",

@@ -19,6 +19,7 @@
     "expand": "展开",
     "compress": "收起",
     "webui": "打开(WebUI)",
+    "tailscale-webui": "Tailscale WebUI",
     "console": "控制台",
     "update": "更新",
     "update-force": "强制更新",
