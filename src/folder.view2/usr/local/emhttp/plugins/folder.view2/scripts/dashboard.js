@@ -244,6 +244,7 @@ const createFolderDocker = (folder, id, position, order, containersInfo, folders
     let autostartStarted = 0;
     let managed = 0;
     let remBefore = 0;
+    let managerTypes = new Set(); // Track manager types for version text determination
 
     // If regex is present searches all containers for a match and put them inside the folder containers
     if (folder.regex) {
@@ -317,6 +318,7 @@ const createFolderDocker = (folder, id, position, order, containersInfo, folders
             newFolder[container].state = ct.info.State.Running;
             newFolder[container].update = ct.info.State.Updated === false && ct.info.State.manager === 'dockerman';
             newFolder[container].managed = ct.info.State.manager === 'dockerman';
+            newFolder[container].manager = ct.info.State.manager;
 
             if(folderDebugMode) {
                 console.log(`Docker ${newFolder[container].id}(${offsetIndex}, ${index}) => ${id}`);
@@ -327,6 +329,8 @@ const createFolderDocker = (folder, id, position, order, containersInfo, folders
             started += newFolder[container].state ? 1 : 0;
             autostart += !(ct.info.State.Autostart === false) ? 1 : 0;
             autostartStarted += ((!(ct.info.State.Autostart === false)) && newFolder[container].state) ? 1 : 0;
+// Track manager types for version text determination
+            managerTypes.add(newFolder[container].manager);
             managed += newFolder[container].managed ? 1 : 0;
 
             folderEvents.dispatchEvent(new CustomEvent('docker-post-folder-preview', {detail: {
@@ -357,9 +361,41 @@ const createFolderDocker = (folder, id, position, order, containersInfo, folders
     //temp var
     const sel = $(`tbody#docker_view span#folder-id-${id}`)
     
-    //set tehe status of a folder
-
-    if (!upToDate) {
+    //set the status of a folder based on manager types
+    
+    // Determine version text based on manager types
+    let shouldHighlight = false;
+    
+    if (managerTypes.size === 1) {
+        // All containers have the same manager type
+        const singleManager = Array.from(managerTypes)[0];
+        if (singleManager === 'composeman') {
+            // Compose containers - no highlight needed
+            shouldHighlight = false;
+        } else if (singleManager === false) {
+            // Third-party containers - no highlight needed
+            shouldHighlight = false;
+        } else if (singleManager === 'dockerman') {
+            // Regular Unraid containers - use existing update logic
+            shouldHighlight = !upToDate;
+        } else {
+            // Unknown manager type - no highlight
+            shouldHighlight = false;
+        }
+    } else if (managerTypes.size > 1) {
+        // Mixed manager types
+        const hasDockerMan = managerTypes.has('dockerman');
+        
+        if (hasDockerMan) {
+            // Mixed with regular containers - highlight if updates needed
+            shouldHighlight = !upToDate;
+        } else {
+            // Mixed compose and third-party only - no highlight
+            shouldHighlight = false;
+        }
+    }
+    
+    if (shouldHighlight) {
         sel.next('span.inner').children().first().addClass('blue-text');
     }
 
@@ -394,6 +430,7 @@ const createFolderDocker = (folder, id, position, order, containersInfo, folders
     folder.status.autostart = autostart;
     folder.status.autostartStarted = autostartStarted;
     folder.status.managed = managed;
+    folder.status.managerTypes = Array.from(managerTypes);
     folder.status.expanded = false;
 
     folderEvents.dispatchEvent(new CustomEvent('docker-post-folder-creation', {detail: {
