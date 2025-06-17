@@ -315,7 +315,7 @@ const createFolderDocker = (folder, id, position, order, containersInfo, folders
             newFolder[container].id = ct.shortId;
             newFolder[container].pause = ct.info.State.Paused;
             newFolder[container].state = ct.info.State.Running;
-            newFolder[container].update = ct.info.State.Updated === false;
+            newFolder[container].update = ct.info.State.Updated === false && ct.info.State.manager === 'dockerman';
             newFolder[container].managed = ct.info.State.manager === 'dockerman';
 
             if(folderDebugMode) {
