@@ -226,6 +226,7 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
     let autostartStarted = 0;
     let managed = 0;
     let remBefore = 0; // This will count items *from this folder* that were originally before its placeholder
+    let managerTypes = new Set(); // Track manager types for version text determination
     if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Initialized local state variables`, { upToDate, started, autostart, autostartStarted, managed, remBefore });
 
     const advanced = $.cookie('docker_listview_mode') == 'advanced';
@@ -770,7 +771,7 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
                                 <table class="preview-status">
                                     <thead class="status-header"><tr><th class="status-header-version">${$.i18n('version')}</th><th class="status-header-stats">CPU/MEM</th><th class="status-header-autostart">${$.i18n('autostart')}</th></tr></thead>
                                     <tbody><tr>
-                                        <td><div class="status-version">${!ct.info.State.Updated === false ? `<span class="green-text folder-update-text"><i class="fa fa-check fa-fw"></i>${$.i18n('up-to-date')}</span>${ct.info.State.manager === 'dockerman' ? `<br><a class="exec" onclick="hideAllTips(); updateContainer('${ct.info.Name}');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i>${$.i18n('force-update')}</span></a>` : ''}`:`<span class="orange-text folder-update-text" style="white-space:nowrap;"><i class="fa fa-flash fa-fw"></i>${$.i18n('update-ready')}</span><br><a class="exec" onclick="hideAllTips(); updateContainer('${ct.info.Name}');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i>${$.i18n('apply-update')}</span></a>`}<br><i class="fa fa-info-circle fa-fw"></i> ${ct.info.Config.Image.split(':').pop()}</div></td>
+                                        <td><div class="status-version">${ct.info.State.Updated !== false ? `<span class="green-text folder-update-text"><i class="fa fa-check fa-fw"></i>${$.i18n('up-to-date')}</span>${ct.info.State.manager === 'dockerman' ? `<br><a class="exec" onclick="hideAllTips(); updateContainer('${ct.info.Name}');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i>${$.i18n('force-update')}</span></a>` : ''}`:`<span class="orange-text folder-update-text" style="white-space:nowrap;"><i class="fa fa-flash fa-fw"></i>${$.i18n('update-ready')}</span><br><a class="exec" onclick="hideAllTips(); updateContainer('${ct.info.Name}');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i>${$.i18n('apply-update')}</span></a>`}<br><i class="fa fa-info-circle fa-fw"></i> ${ct.info.Config.Image.split(':').pop()}</div></td>
                                         <td><div class="status-stats"><span class="cpu-${ct.shortId}">0%</span><div class="usage-disk mm"><span id="cpu-${ct.shortId}" style="width: 0%;"></span><span></span></div><br><span class="mem-${ct.shortId}">0 / 0</span></div></td>
                                         <td><div class="status-autostart"><input type="checkbox" style="display:none" class="staus-autostart-checkbox"></div></td>
                                     </tr></tbody>
@@ -837,8 +838,9 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
                 id: ct.shortId,
                 pause: ct.info.State.Paused,
                 state: ct.info.State.Running,
-                update: ct.info.State.Updated === false,
-                managed: ct.info.State.manager === 'dockerman'
+                update: ct.info.State.Updated === false && ct.info.State.manager === 'dockerman',
+                managed: ct.info.State.manager === 'dockerman',
+                manager: ct.info.State.manager
             };
             if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}), container ${container_name_in_folder}: Stored in newFolder:`, JSON.parse(JSON.stringify(newFolder[container_name_in_folder])));
 
@@ -863,7 +865,7 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
                 }
             }
 
-            if (folder.settings.preview_update && !ct.info.State.Updated) {
+            if (folder.settings.preview_update && ct.info.State.Updated === false && ct.info.State.manager === "dockerman") {
                 let $appNameSpan = $previewElementTarget.children('span.inner').children('span.appname');
                 if (!$appNameSpan.length) {
                     $appNameSpan = $previewElementTarget.children('span.appname');
@@ -916,6 +918,9 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
             autostart += !(ct.info.State.Autostart === false) ? 1 : 0;
             autostartStarted += ((!(ct.info.State.Autostart === false)) && newFolder[container_name_in_folder].state) ? 1 : 0;
             managed += newFolder[container_name_in_folder].managed ? 1 : 0;
+            // Track manager types for version text determination
+            managerTypes.add(newFolder[container_name_in_folder].manager);
+            
             if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}), container ${container_name_in_folder}: Updated folder aggregate states:`, { upToDate, started, autostart, autostartStarted, managed });
             folderEvents.dispatchEvent(new CustomEvent('docker-post-folder-preview', {detail: {
                 folder: folder,
@@ -967,11 +972,74 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
     }
 
     if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Setting folder status indicators based on aggregate states.`);
-    if (!upToDate) {
-        $(`tr.folder-id-${id} > td.updatecolumn > span`).replaceWith($(`<div class="advanced" style="display: ${advanced ? 'block' : 'none'};"><span class="orange-text folder-update-text" style="white-space:nowrap;"><i class="fa fa-flash fa-fw"></i> ${$.i18n('update-ready')}</span></div>`));
+    
+    // Determine version text based on manager types
+    let versionText = '';
+    let versionIcon = '';
+    let showUpdateButton = false;
+    
+    if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Manager types in folder:`, Array.from(managerTypes));
+    
+    if (managerTypes.size === 1) {
+        // All containers have the same manager type
+        const singleManager = Array.from(managerTypes)[0];
+        if (singleManager === 'composeman') {
+            versionText = 'compose';
+            versionIcon = 'fa-docker';
+        } else if (singleManager === false) {
+            versionText = '3rd party';
+            versionIcon = 'fa-docker';
+        } else if (singleManager === 'dockerman') {
+            // Regular Unraid containers - use existing update logic
+            if (!upToDate) {
+                versionText = $.i18n('update-ready');
+                versionIcon = 'fa-flash';
+                showUpdateButton = true;
+            } else {
+                versionText = $.i18n('up-to-date');
+                versionIcon = 'fa-check';
+            }
+        } else {
+            // Unknown manager type - default to up-to-date
+            versionText = $.i18n('up-to-date');
+            versionIcon = 'fa-check';
+        }
+    } else if (managerTypes.size > 1) {
+        // Mixed manager types
+        const hasDockerMan = managerTypes.has('dockerman');
+        const hasCompose = managerTypes.has('composeman');
+        const hasThirdParty = managerTypes.has(false);
+        
+        if (hasDockerMan && (hasCompose || hasThirdParty)) {
+            // Mixed with regular containers - check if updates needed
+            if (!upToDate) {
+                versionText = $.i18n('update-ready');
+                versionIcon = 'fa-flash';
+                showUpdateButton = true;
+            } else {
+                versionText = 'mixed';
+                versionIcon = 'fa-check';
+            }
+        } else {
+            // Mixed compose and third-party only
+            versionText = 'mixed';
+            versionIcon = 'fa-check';
+        }
+    } else {
+        // No containers (edge case)
+        versionText = $.i18n('up-to-date');
+        versionIcon = 'fa-check';
+    }
+    
+    // Apply the determined version text and styling
+    if (showUpdateButton) {
+        $(`tr.folder-id-${id} > td.updatecolumn > span`).replaceWith($(`<div class="advanced" style="display: ${advanced ? 'block' : 'none'};"><span class="orange-text folder-update-text" style="white-space:nowrap;"><i class="fa ${versionIcon} fa-fw"></i> ${versionText}</span></div>`));
         $(`tr.folder-id-${id} > td.updatecolumn > div.advanced:has(a)`).remove();
         $(`tr.folder-id-${id} > td.updatecolumn`).append($(`<a class="exec" onclick="updateFolder('${id}');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i> ${$.i18n('apply-update')}</span></a>`));
-        if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Set 'update ready' status in update column.`);
+        if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Set '${versionText}' status with update button.`);
+    } else {
+        $(`tr.folder-id-${id} > td.updatecolumn > span`).replaceWith($(`<span class="green-text folder-update-text"><i class="fa ${versionIcon} fa-fw"></i> ${versionText}</span>`));
+        if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Set '${versionText}' status without update button.`);
     }
     if (started) {
         $(`tr.folder-id-${id} i#load-folder-${id}`).attr('class', 'fa fa-play started green-text folder-load-status');
@@ -994,7 +1062,7 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
     else if (managed > 0 && managed === Object.values(folder.containers).length) { $(`tr.folder-id-${id}`).addClass('managed-full'); }
     if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Applied managed status class. Managed: ${managed}, Total: ${Object.values(folder.containers).length}.`);
 
-    folder.status = { upToDate, started, autostart, autostartStarted, managed, expanded: false };
+    folder.status = { upToDate, started, autostart, autostartStarted, managed, managerTypes: Array.from(managerTypes), expanded: false };
     if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}): Set final folder.status object:`, JSON.parse(JSON.stringify(folder.status)));
 
     $(`#folder-${id}-auto`).on("change", folderAutostart);
