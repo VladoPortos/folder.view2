@@ -404,7 +404,7 @@ const createFolder = (folder, id, positionInMainOrder, liveOrderArray, container
         if (!$containerTR.length || !$containerTR.hasClass('sortable')) {
             if(FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolder (id: ${id}), container ${container_name_in_folder}: TR not found by ID or not sortable. Fallback search...`);
             $containerTR = $("#docker_list > tr.sortable").filter(function() {
-                return $(this).find("td.ct-name .appname a").text().trim() === container_name_in_folder;
+                return $(this).find("td.ct-name .appname").text().trim() === container_name_in_folder;
             }).first();
         }
 
