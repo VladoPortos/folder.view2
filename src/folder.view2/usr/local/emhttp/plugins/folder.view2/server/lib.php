@@ -122,7 +122,16 @@
             global $dockerManPaths, $documentRoot;
             global $driver, $host; 
             if (!isset($driver) || !is_array($driver)) { $driver = DockerUtil::driver(); fv2_debug_log("Initialized \$driver: " . json_encode($driver)); }
-            if (!isset($host)) { $host = DockerUtil::host(); fv2_debug_log("Initialized \$host: " . $host); }
+            if (empty($host)) {
+                $host = DockerUtil::host();
+                if (empty($host)) {
+                    // Fallback: derive host IP from the HTTP request
+                    $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
+                    $host = preg_replace('/:\d+$/', '', $host); // Strip port number if present
+                    fv2_debug_log("WARNING: DockerUtil::host() returned empty. Falling back to HTTP request host: " . $host);
+                }
+                fv2_debug_log("Initialized \$host: " . $host);
+            }
 
             $dockerClient = new DockerClient();
             $DockerUpdate = new DockerUpdate();

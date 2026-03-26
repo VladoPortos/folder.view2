@@ -18,6 +18,21 @@ const createFolders = async () => {
     const containersInfo = JSON.parse(prom[2]);
     let order = Object.values(JSON.parse(prom[3]));
 
+    // Fix WebUI URLs that have a missing host (e.g., "http://:PORT" instead of "http://IP:PORT")
+    // This can happen when DockerUtil::host() fails to resolve the server IP on the PHP side.
+    const currentHost = window.location.hostname;
+    for (const ctKey of Object.keys(containersInfo)) {
+        const ct = containersInfo[ctKey];
+        if (ct.info?.State?.WebUi && /^https?:\/\/:/.test(ct.info.State.WebUi)) {
+            ct.info.State.WebUi = ct.info.State.WebUi.replace(/^(https?:\/\/)(:)/, '$1' + currentHost + '$2');
+            if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolders: Fixed missing host in WebUi for ${ctKey}: ${ct.info.State.WebUi}`);
+        }
+        if (ct.info?.State?.TSWebUi && /^https?:\/\/:/.test(ct.info.State.TSWebUi)) {
+            ct.info.State.TSWebUi = ct.info.State.TSWebUi.replace(/^(https?:\/\/)(:)/, '$1' + currentHost + '$2');
+            if (FOLDER_VIEW_DEBUG_MODE) console.log(`[FV2_DEBUG] createFolders: Fixed missing host in TSWebUi for ${ctKey}: ${ct.info.State.TSWebUi}`);
+        }
+    }
+
     if (FOLDER_VIEW_DEBUG_MODE) {
         console.log('[FV2_DEBUG] createFolders: --- INITIAL ORDERS ---');
         console.log('[FV2_DEBUG] createFolders: Raw `unraidOrder` (from read_order.php):', JSON.parse(JSON.stringify(unraidOrder)));
